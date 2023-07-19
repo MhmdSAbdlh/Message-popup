@@ -1,28 +1,37 @@
 package raven.message;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URI;
 
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
+import javaswingdev.FontAwesome;
+import javaswingdev.sm3d.ModelItem;
+import javaswingdev.sm3d.SocialMedia3D;
+import javaswingdev.sm3d.SocialMediaEvent;
 import raven.swing.Glass;
 
-public class MessageDialog extends javax.swing.JDialog {
+public class SocialMedia extends javax.swing.JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JFrame fram;
 	private Animator animator;
 	private Glass glass;
 	private boolean show;
-	private MessageType messageType = MessageType.CANCEL;
 
-	public MessageDialog(JFrame fram) {
+	public SocialMedia(JFrame fram) {
 		super(fram, true);
 		this.fram = fram;
 		initComponents();
@@ -32,6 +41,12 @@ public class MessageDialog extends javax.swing.JDialog {
 	private void init() {
 		setBackground(new Color(0, 0, 0, 0));
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		StyledDocument doc = lbTitle.getStyledDocument();
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		doc.setParagraphAttributes(0, doc.getLength(), center, false);
+		lbTitle.setOpaque(false);
+		lbTitle.setBackground(new Color(0, 0, 0, 0));
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -86,32 +101,34 @@ public class MessageDialog extends javax.swing.JDialog {
 		startAnimator(false);
 	}
 
-	public MessageType getMessageType() {
-		return messageType;
+	public void setLinks(String youtube, String github, String facebook, String website, String instagram,
+			String twitter) {
+		socialMedia3D1.addItem(new ModelItem("Youtube", youtube, FontAwesome.YOUTUBE_PLAY, Color.RED,
+				new Color(204, 0, 0), new Color(229, 0, 0)));
+		socialMedia3D1.addItem(new ModelItem("Website", website, FontAwesome.GLOBE, new Color(255, 207, 0),
+				new Color(204, 165, 0), new Color(229, 186, 0)));
+		socialMedia3D1.addItem(new ModelItem("GitHub", github, FontAwesome.GITHUB, new Color(38, 38, 38),
+				new Color(16, 16, 16), new Color(40, 40, 40)));
+		socialMedia3D1.addItem(new ModelItem("Facebook", facebook, FontAwesome.FACEBOOK, new Color(23, 120, 242),
+				new Color(17, 93, 188), new Color(20, 106, 214)));
+		socialMedia3D1.addItem(new ModelItem("Instagram", instagram, FontAwesome.INSTAGRAM, new Color(193, 53, 132),
+				new Color(140, 38, 96), new Color(165, 44, 113)));
+		socialMedia3D1.addItem(new ModelItem("Twitter", twitter, FontAwesome.TWITTER, new Color(29, 161, 242),
+				new Color(22, 125, 188), new Color(25, 142, 214)));
 	}
 
 	private void initComponents() {
 
 		background1 = new raven.message.Background();
-		cmdCancel = new JButton();
 		cmdOK = new JButton();
 		lbIcon = new javax.swing.JLabel();
-		lbTitle = new javax.swing.JLabel();
+		lbTitle = new javax.swing.JTextPane();
+		socialMedia3D1 = new SocialMedia3D();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setUndecorated(true);
 
 		background1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
-
-		cmdCancel.setBackground(new java.awt.Color(245, 71, 71));
-		cmdCancel.setForeground(Color.white);
-		cmdCancel.setText("Cancel");
-		cmdCancel.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-		cmdCancel.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cmdCancelActionPerformed(evt);
-			}
-		});
 
 		cmdOK.setText("OK");
 		cmdOK.setBackground(new Color(0x091727));
@@ -119,41 +136,51 @@ public class MessageDialog extends javax.swing.JDialog {
 		cmdOK.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
 		cmdOK.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cmdOKActionPerformed(evt);
+				closeMessage();
 			}
 		});
 
 		lbIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/raven/message/icon.png"))); // NOI18N
+		lbIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/raven/message/about.png"))); // NOI18N
 
 		lbTitle.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
 		lbTitle.setForeground(new java.awt.Color(245, 71, 71));
-		lbTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		lbTitle.setEditable(false);
+		lbTitle.setFocusable(false);
 		lbTitle.setText("Message Title");
+		socialMedia3D1.addEvent(new SocialMediaEvent() {
+			@Override
+			public void selected(ModelItem item) {
+				try {
+					Desktop.getDesktop().browse(new URI(item.getUrl()));
+				} catch (Exception e) {
+				}
+			}
+		});
 
 		javax.swing.GroupLayout background1Layout = new javax.swing.GroupLayout(background1);
 		background1.setLayout(background1Layout);
-		background1Layout
-				.setHorizontalGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(background1Layout.createSequentialGroup()
-								.addComponent(cmdCancel, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
-								.addGap(3, 3, 3)
-								.addComponent(cmdOK, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE))
-						.addComponent(lbIcon, javax.swing.GroupLayout.DEFAULT_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(lbTitle, javax.swing.GroupLayout.DEFAULT_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-		background1Layout.setVerticalGroup(background1Layout
+		background1Layout.setHorizontalGroup(background1Layout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background1Layout.createSequentialGroup()
-						.addComponent(lbIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 74,
-								javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addGap(35, 35, 35).addComponent(lbTitle).addGap(35, 35, 35)
-						.addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-								.addComponent(cmdCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addComponent(cmdOK, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
-										javax.swing.GroupLayout.PREFERRED_SIZE))));
+				.addGroup(background1Layout.createSequentialGroup().addComponent(socialMedia3D1,
+						javax.swing.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
+				.addComponent(cmdOK, GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE,
+						javax.swing.GroupLayout.DEFAULT_SIZE, 200)
+				.addComponent(lbIcon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+						Short.MAX_VALUE)
+				.addComponent(lbTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+						Short.MAX_VALUE));
+		background1Layout
+				.setVerticalGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+								background1Layout.createSequentialGroup()
+										.addComponent(lbIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 74,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addGap(30, 30, 30).addComponent(lbTitle).addGap(10, 10, 10)
+										.addComponent(socialMedia3D1, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addGap(10, 10, 10).addComponent(cmdOK, javax.swing.GroupLayout.PREFERRED_SIZE,
+												50, javax.swing.GroupLayout.PREFERRED_SIZE)));
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
@@ -167,25 +194,11 @@ public class MessageDialog extends javax.swing.JDialog {
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void cmdCancelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdCancelActionPerformed
-		messageType = MessageType.CANCEL;
-		closeMessage();
-	}// GEN-LAST:event_cmdCancelActionPerformed
-
-	private void cmdOKActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdOKActionPerformed
-		messageType = MessageType.OK;
-		closeMessage();
-	}// GEN-LAST:event_cmdOKActionPerformed
-
-	public static enum MessageType {
-		CANCEL, OK
-	}
-
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private raven.message.Background background1;
-	private JButton cmdCancel;
 	private JButton cmdOK;
 	private javax.swing.JLabel lbIcon;
-	private javax.swing.JLabel lbTitle;
+	private javax.swing.JTextPane lbTitle;
+	private SocialMedia3D socialMedia3D1;
 	// End of variables declaration//GEN-END:variables
 }

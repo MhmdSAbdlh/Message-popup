@@ -1,4 +1,4 @@
-package javaswingdev.message;
+package raven.message;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,11 +7,14 @@ import java.awt.RenderingHints;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+
 import javax.swing.JPanel;
 
 public class Background extends JPanel {
 
-    public Background() {
+    private static final long serialVersionUID = 1L;
+
+	public Background() {
         init();
     }
 
